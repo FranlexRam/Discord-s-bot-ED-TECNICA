@@ -1,3 +1,5 @@
+const WEATHER_API_KEY = 'ea3e909bea13b9ee23b45658c6702774';
+
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const axios = require('axios').default;
 
@@ -13,9 +15,9 @@ const createEmbed = (country) => {
       { name: 'Region', value: country.subregion, inline: true },
       { name: 'Habitantes', value: `${country.population}`, inline: true },
     )
-    // .addFields({ name: 'Inline field title', value: 'Some value here', inline: true })
-    //.setImage('https://i.imgur.com/AfFp7pu.png')
-    //.setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
+    .addFields({ name: 'Time-zone', value: country.timezones[0], inline: true })
+    .setImage('https://i.imgur.com/AfFp7pu.png')
+    .setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
 
   return exampleEmbed;
 
@@ -35,9 +37,11 @@ module.exports = {
       const { data: [countryApi] } = await axios.get(`https://restcountries.com/v3.1/name/${country}`);
       console.log(countryApi);
 
+    //   const weatherResponse = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${country[0]?.capital},${country[0].cca2}&appid=${WEATHER_API_KEY}`);
+    //   console.log(weatherResponse);
+
       const embed = createEmbed(countryApi);
       await interaction.reply( { embeds: [embed] } );
-
 
 
 
