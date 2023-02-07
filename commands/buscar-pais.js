@@ -1,23 +1,25 @@
-const WEATHER_API_KEY = 'ea3e909bea13b9ee23b45658c6702774';
+
 
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const axios = require('axios').default;
 
-const createEmbed = (country) => {
+const createEmbed = (country, weather) => {
   const exampleEmbed = new EmbedBuilder()
     .setColor(0x0099FF)
     .setTitle(country.name.common)
     .setURL(`https://en.wikipedia.org/wiki/${country.name.common}`)
     .setDescription('Show country information')
-    .setThumbnail(country.flags.png)
+    .setThumbnail(`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`)
     .addFields(
       { name: 'Capital', value: country.capital[0] },
       { name: 'Region', value: country.subregion, inline: true },
-      { name: 'Habitantes', value: `${country.population}`, inline: true },
+      { name: 'Habitantes', value: Intl.NumberFormat('de-DE').format(`${country.population} habitantes`), inline: true },
+      { name: 'Temperatura', value: `${weather.main.temp} C`, inline: true },
+      { name: 'Clima', value: `${weather.weather[0].description[0].toUpperCase() + weather.weather[0].description.substring(1)}`, inline: true },
     )
     .addFields({ name: 'Time-zone', value: country.timezones[0], inline: true })
-    .setImage('https://i.imgur.com/AfFp7pu.png')
-    .setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
+    .setImage(country.flags.png)
+    .setFooter({ text: 'Some climate here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
 
   return exampleEmbed;
 
@@ -35,12 +37,14 @@ module.exports = {
     const country = interaction.options.getString('pais');
     try {
       const { data: [countryApi] } = await axios.get(`https://restcountries.com/v3.1/name/${country}`);
-      console.log(countryApi);
 
-    //   const weatherResponse = await axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${country[0]?.capital},${country[0].cca2}&appid=${WEATHER_API_KEY}`);
-    //   console.log(weatherResponse);
+      const [lat, lon] = countryApi.latlng; //tomando valores de la API country requeridos en la variable weather
+      const { data: weatherApi } = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=ea3e909bea13b9ee23b45658c6702774&units=metric&lang=es`);
+      //console.log(countryApi);
+      console.log(weatherApi);
 
-      const embed = createEmbed(countryApi);
+
+      const embed = createEmbed(countryApi, weatherApi);
       await interaction.reply( { embeds: [embed] } );
 
 
