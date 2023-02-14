@@ -4,8 +4,11 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const axios = require('axios').default;
 
 const createEmbed = (country, weather) => {
+  // 1. Get colors from flag
+
+  // 2. Create embed with builder
   const exampleEmbed = new EmbedBuilder()
-    .setColor(0x0099FF)
+    //.setColor()
     .setTitle(country.name.common)
     .setURL(`https://en.wikipedia.org/wiki/${country.name.common}`)
     .setDescription('Show country information')
@@ -13,9 +16,9 @@ const createEmbed = (country, weather) => {
     .addFields(
       { name: 'Capital', value: country.capital[0] },
       { name: 'Region', value: country.subregion, inline: true },
-      { name: 'Habitantes', value: Intl.NumberFormat('de-DE').format(`${country.population} habitantes`), inline: true },
-      { name: 'Temperatura', value: `${weather.main.temp} C`, inline: true },
-      { name: 'Clima', value: `${weather.weather[0].description[0].toUpperCase() + weather.weather[0].description.substring(1)}`, inline: true },
+      { name: 'Population', value: Intl.NumberFormat('de-DE').format(`${country.population}`), inline: true },
+      { name: 'Temperature', value: `${weather.main.temp} C`, inline: true },
+      { name: 'Weather', value: `${weather.weather[0].description[0].toUpperCase() + weather.weather[0].description.substring(1)}`, inline: true },
     )
     .addFields({ name: 'Time-zone', value: country.timezones[0], inline: true })
     .setImage(country.flags.png)
@@ -39,7 +42,7 @@ module.exports = {
       const { data: [countryApi] } = await axios.get(`https://restcountries.com/v3.1/name/${country}`);
 
       const [lat, lon] = countryApi.latlng; //tomando valores de la API country requeridos en la variable weather
-      const { data: weatherApi } = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=ea3e909bea13b9ee23b45658c6702774&units=metric&lang=es`);
+      const { data: weatherApi } = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=ea3e909bea13b9ee23b45658c6702774&units=metric`);
       //console.log(countryApi);
       console.log(weatherApi);
 
