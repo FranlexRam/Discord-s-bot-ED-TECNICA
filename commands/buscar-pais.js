@@ -34,11 +34,16 @@ module.exports = {
     .setDescription('Muestra informacion del pais suminstrado')
     .addStringOption(option =>
       option.setName('pais')
-        .setDescription('Nombre del pais')
-        .setRequired(true)),
+        .setDescription('Nombre del pais')),
+  //.setRequired(true)),
   async execute(interaction) {
     const country = interaction.options.getString('pais');
+    //const discord = interaction.user.id;
     try {
+      // if (country) {
+      //   const embed = getEmbedByCountry(country);
+      //   return await interaction.reply({ embeds: [embed] });
+      // }
       const { data: [countryApi] } = await axios.get(`https://restcountries.com/v3.1/name/${country}`);
 
       const [lat, lon] = countryApi.latlng; //tomando valores de la API country requeridos en la variable weather
