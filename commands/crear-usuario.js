@@ -1,3 +1,4 @@
+const { default: axios } = require('axios');
 const { SlashCommandBuilder } = require('discord.js');
 const db = require('../database');
 
@@ -7,11 +8,11 @@ module.exports = {
     .setDescription('Un usuario en la base de datos')
     .addStringOption(option =>
       option.setName('nombre')
-        .setDescription('Tu primer nombre')
+        .setDescription('Primer nombre y primer apellido')
         .setRequired(true))
     .addStringOption(option =>
-      option.setName('apellido')
-        .setDescription('Tu primer apellido')
+      option.setName('contrasena')
+        .setDescription('Tu contrasena')
         .setRequired(true))
     .addStringOption(option =>
       option.setName('email')
@@ -25,17 +26,32 @@ module.exports = {
 
     try {
       const name = interaction.options.getString('nombre');
-      const lastName = interaction.options.getString('apellido');
+      const password = interaction.options.getString('contrasena');
       const email = interaction.options.getString('email');
       const country = interaction.options.getString('pais');
 
-      db.prepare(`
-      INSERT INTO users (discord_id, first_name, last_name, email, country)
-      VALUES (?, ?, ?, ?, ?)
-      `).run(interaction.user.id, name, lastName, email, country);
-      await interaction.reply('Registrado exitosamente!');
 
+      const newUser = {
+        name,
+        email,
+        password,
+        passwordConfirm: password,
+      };
+
+      await axios.post('http://api.cup2022.ir/api/v1/user', newUser);
+
+      db.prepare(`
+      INSERT INTO users (discord_id, name, email, password, country)
+      VALUES (?, ?, ?, ?, ?)
+      `).run(interaction.user.id, name, email, password, country);
+      await interaction.reply('Registrado exitosamente!');
     } catch (error) {
+      //ver errores de la API
+      console.log(error?.response?.data?.message);
+      if (error?.response?.data?.message) {
+        return await interaction.reply('User validation failed: email: Please provide a valid email, password: Path `password` (`00`) is shorter than the minimum allowed length (8)., passwordConfirm: Path `passwordConfirm` (`00`) is shorter than the minimum allowed length (8)');
+      }
+      //otros errores
       console.log(error.message);
       switch (error.message) {
       case 'UNIQUE constraint failed: users.discord_id':
