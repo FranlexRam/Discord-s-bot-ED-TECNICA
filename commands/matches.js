@@ -6,19 +6,23 @@ const createEmbed = (team) => {
   // 2. Create embed with builder
   const exampleEmbed = new EmbedBuilder()
     //.setColor()
-    .setTitle(team.name_en)
+    .setTitle(team.home_team_en)
     //.setURL(`https://en.wikipedia.org/wiki/${team.name.common}`)
-    .setDescription('Show team information')
+    .setDescription('Shows team matches')
     //.setThumbnail(`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`)
     .addFields(
-      { name: 'Team', value: team.name_en },
-      { name: 'Fifa code', value: team.fifa_code, inline: true },
-      { name: 'Group', value: team.groups, inline: true },
+      { name: 'Local date', value: team.local_date },
+      { name: 'Match Day', value: team.matchday, inline: true },
+      { name: 'Home team', value: team.home_team_en, inline: true },
+      { name: 'Away team', value: team.away_team_en, inline: true },
+      { name: 'Home Score', value: team.home_score, inline: true },
+      { name: 'Away Score', value: team.away_score, inline: true },
       //{ name: 'Temperature', value: `${weather.main.temp} C`, inline: true },
       //{ name: 'Weather', value: `${weather.weather[0].description[0].toUpperCase() + weather.weather[0].description.substring(1)}`, inline: true },
     )
     //.addFields({ name: 'Time-zone', value: team.timezones[0], inline: true })
-    .setImage(team.flag);
+    .setImage(team.home_flag)
+    .setImage(team.away_flag);
     //.setFooter({ text: 'Some climate here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
 
   return exampleEmbed;
@@ -32,13 +36,17 @@ const createEmbed = (team) => {
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('buscar-equipo')
-    .setDescription('Muestra informacion del equipo en el mundial!')
+    .setName('buscar-partidos')
+    .setDescription('Shows team matches!')
     .addStringOption(option =>
       option.setName('equipo')
         .setDescription('Nombre del equipo')
         .setRequired(true)),
   async execute(interaction) {
+
+    // await interaction.deferReply();
+    // //await wait(4000);
+    // await interaction.editReply('Pong!');
 
     try {
       const team = interaction.options.getString('equipo');
@@ -50,10 +58,11 @@ module.exports = {
 
       console.log(token);
 
-      const { data:response } = await axios.get('http://api.cup2022.ir/api/v1/team', {
+      const { data:response } = await axios.get('http://api.cup2022.ir/api/v1/match', {
         headers: { 'Authorization' : `Bearer ${token}` }
       });
       const t = response.data.find(equipo => equipo.name_en === team);
+      console.log(response.data.filter(equipo => equipo.home_team_en === team || equipo.away_team_en === team));
 
       if (!t) {
         return await interaction.reply('El pais no participo en el mundial Qatar22');
