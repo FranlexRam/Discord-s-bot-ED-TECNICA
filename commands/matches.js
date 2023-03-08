@@ -6,8 +6,8 @@ const createEmbed = (team) => {
   // 2. Create embed with builder
   const exampleEmbed = new EmbedBuilder()
     //.setColor()
-    .setTitle(team.home_team_en)
-    .setDescription('Shows team matches')
+    .setTitle(`${team.home_team_en} vs ${team.away_team_en}`)
+    .setDescription(`GROUP ${team.group}`)
     .setThumbnail(team.home_flag)
     .addFields(
       { name: 'Local date', value: team.local_date },
@@ -62,12 +62,6 @@ module.exports = {
       //const t = response.data.find(equipo => equipo.name_en === team);
       const matches = response.data.filter(equipo => equipo.home_team_en === team || equipo.away_team_en === team);
 
-      // const embeds = [];
-
-      // for (const match in matches) {
-      //   const newEmbed = createEmbed(match);
-      //   embeds.push(newEmbed);
-      // }
 
       if (matches.length === 0) {
         return await interaction.editReply('El pais no participo en el mundial Qatar22');
@@ -75,6 +69,12 @@ module.exports = {
 
       console.log(response);
       const embed = createEmbed(matches[1]);
+      // const embeds = [];
+
+      // for (const match in matches) {
+      //   const newEmbed = createEmbed(match);
+      //   embeds.push(newEmbed);
+      // }
       await interaction.editReply( { embeds: [embed] } );
     } catch (error) {
       //ver errores de la API
