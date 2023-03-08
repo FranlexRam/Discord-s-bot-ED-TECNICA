@@ -7,7 +7,6 @@ const createEmbed = (team) => {
   const exampleEmbed = new EmbedBuilder()
     //.setColor()
     .setTitle(team.home_team_en)
-    //.setURL(`https://en.wikipedia.org/wiki/${team.name.common}`)
     .setDescription('Shows team matches')
     .setThumbnail(team.home_flag)
     .addFields(
@@ -19,7 +18,7 @@ const createEmbed = (team) => {
       { name: 'Away Score', value: `${team.away_score}`, inline: true },
       //{ name: 'Temperature', value: `${weather.main.temp} C`, inline: true },
       //{ name: 'Weather', value: `${weather.weather[0].description[0].toUpperCase() + weather.weather[0].description.substring(1)}`, inline: true },
-    )
+    );
     //.addFields({ name: 'Time-zone', value: team.timezones[0], inline: true })
     //.setImage(team.home_flag);
     //.setImage(team.away_flag);
@@ -63,12 +62,19 @@ module.exports = {
       //const t = response.data.find(equipo => equipo.name_en === team);
       const matches = response.data.filter(equipo => equipo.home_team_en === team || equipo.away_team_en === team);
 
+      // const embeds = [];
+
+      // for (const match in matches) {
+      //   const newEmbed = createEmbed(match);
+      //   embeds.push(newEmbed);
+      // }
+
       if (matches.length === 0) {
         return await interaction.editReply('El pais no participo en el mundial Qatar22');
       }
 
       console.log(response);
-      const embed = createEmbed(matches[2]);
+      const embed = createEmbed(matches[1]);
       await interaction.editReply( { embeds: [embed] } );
     } catch (error) {
       //ver errores de la API
