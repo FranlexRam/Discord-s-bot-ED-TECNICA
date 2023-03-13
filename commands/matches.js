@@ -67,15 +67,15 @@ module.exports = {
         return await interaction.editReply('El pais no participo en el mundial Qatar22');
       }
 
-      console.log(response);
-      const embed = createEmbed(matches[1]);
-      // const embeds = [];
+      // console.log(response);
+      // const embed = createEmbed(matches[1]);
+      const embeds = [];
 
-      // for (const match in matches) {
-      //   const newEmbed = createEmbed(match);
-      //   embeds.push(newEmbed);
-      // }
-      await interaction.editReply( { embeds: [embed] } );
+      for (const match of matches) {
+        const newEmbed = createEmbed(match);
+        embeds.push(newEmbed);
+      }
+      await interaction.editReply( { embeds: embeds } );
     } catch (error) {
       //ver errores de la API
       console.log(error?.response?.data?.message);
